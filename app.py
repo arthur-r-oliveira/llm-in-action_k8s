@@ -35,14 +35,14 @@ picture = st.camera_input("")
 st.subheader(':grey[Take a picture. Say ] :blue[_Kubernetes_]:grey[!]')
 
 if picture:
-  with open ('snap.jpg','wb') as f:
+  with open ('/var/tmp/snap.jpg','wb') as f:
     f.write(picture.getbuffer())
 
   # Initialize the Ollama client
   client = Client(host=ollama_base_url)
 
   # Define the path to your image
-  image_path = 'snap.jpg'
+  image_path = '/var/tmp/snap.jpg'
 
   # Prepare the message to send to the LLaVA model
   message = {

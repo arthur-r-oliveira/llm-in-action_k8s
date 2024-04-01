@@ -14,12 +14,20 @@ spec:
       labels:
         app: keynote
     spec:
+      volumes:
+        - name: keynote-pvc
+          persistentVolumeClaim:
+            claimName: keynote-pvc
       containers:
         - name: keynote
-          image: ghcr.io/cncf/keynote
+          #          image: ghcr.io/cncf/keynote
+          image: quay.io/rhn_support_arolivei/keynote:latest
           imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - mountPath: "/var/tmp"
+              name: keynote-pvc
           ports:
             - containerPort: 8501
           env:
             - name: OLLAMA_BASE_URL
-              value: "http://host.docker.internal:11434"
+              value: "http://ollama-svc.ollama.svc.cluster.local"

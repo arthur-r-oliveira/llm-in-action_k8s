@@ -1,0 +1,32 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  annotations:
+    openshift.io/host.generated: "true"
+  creationTimestamp: "2024-03-29T13:31:44Z"
+  generation: 1
+  name: keynote
+  namespace: test
+  resourceVersion: "28571"
+  uid: 541929b6-1511-4198-8297-5c164aca9976
+spec:
+  host: keynote-test.apps.example.com
+  port:
+    targetPort: 8501
+  to:
+    kind: Service
+    name: keynote
+    weight: 100
+  tls:
+    termination: edge    
+  wildcardPolicy: None
+status:
+  ingress:
+  - conditions:
+    - lastTransitionTime: "2024-03-29T13:31:44Z"
+      status: "True"
+      type: Admitted
+    host: keynote-test.apps.example.com
+    routerCanonicalHostname: router-default.apps.example.com
+    routerName: default
+    wildcardPolicy: None
