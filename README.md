@@ -1,63 +1,49 @@
-# LLMs in Action: A Cloud Native Story
+# LLMs in Action: A Cloud Native Story, running on microshift
+# Forked from https://github.com/cncf/llm-in-action
 
-## Prerequisites
+# Using Ollama UBI as internal k8s service
+https://github.com/williamcaban/ollama-ubi
 
-- [Docker](https://docs.docker.com/install/)
-  - Docker is a platform for developers and sysadmins to develop, ship, and run applications. Docker enables you to separate your applications from your infrastructure so you can deliver software quickly.
-- [Ollama](https://ollama.com/)
-  - Ollama is a Language Model as a Service (LMaaS) that provides a RESTful API for interacting with large language models. It's a great way to get started with LLMs without having to worry about the infrastructure.
-- [kind](https://kind.sigs.k8s.io/)
-  - kind is "Kubernetes in Docker," used by the Kubernetes project to help test features and run integration tests. It turns out it's a handy way for anyone to spin up a cluster quickly. Big thank you to @bentheelder for developing it 👏🏼 👏🏼
-- [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
-  - kubectl is how you interact with k8s using the command line. This allows you to become a k8s whisperer :-)
+## with Ollama UBI pod, pull the required model
+### This command will download the mistral model for ollama to use
 
-With Ollama installed on your machine, you will need to pull the LLaVa model by running
+~~
+$ ollama pull mistral
+~~
 
-```sh
-ollama pull llava
-```
 
-You can verify that the model is installed by running
+~~~
+$ oc get pods -A |egrep "keynote|ollama"
+ollama                     ollama-serve-6b77c4df5-rq8k8               1/1     Running                    0               3h6m
+test                       keynote-66c595b94b-6z6zn                   1/1     Running                    2               2d12h
+$ microshift version
+MicroShift Version: 4.14.18
+Base OCP Version: 4.14.18
+$ oc get nodes
+NAME         STATUS   ROLES                         AGE     VERSION
+node-nvidia   Ready    control-plane,master,worker   3d17h   v1.27.11
+$ oc version
+Client Version: 4.14.0-202401111553.p0.g286cfa5.assembly.stream-286cfa5
+Kustomize Version: v5.0.1
+Kubernetes Version: v1.27.11
 
-```sh
-ollama list
+$ oc get routes -A
+NAMESPACE   NAME           HOST                            ADMITTED   SERVICE      TLS
+chat        chat-route     chat.apps.example.com           True       chat-svc     
+ollama      ollama-route   ollama.apps.example.com         True       ollama-svc   
+test        keynote        keynote-test.apps.example.com   True       keynote      
 
-NAME            ID           SIZE   MODIFIED
-llava:latest    8dd30f6b0cb1 4.7 GB 17 seconds ago 
-```
+$ oc get pods
+NAME                           READY   STATUS    RESTARTS   AGE
+ollama-serve-6b77c4df5-rq8k8   1/1     Running   0          3h9m
+$ oc rsh ollama-serve-6b77c4df5-rq8k8 
+sh-5.1$ ollama list
+NAME              	ID          	SIZE  	MODIFIED   
+falcon:7b-instruct	4280f7257e73	4.2 GB	2 days ago	
+llava:latest      	8dd30f6b0cb1	4.7 GB	2 days ago	
+mistral:latest    	61e88e884507	4.1 GB	2 days ago	
+sh-5.1$ 
+~~~
 
-## Startup
-
-We have crafted a few scripts to make this demo run as quickly as possible on your machine once you've installed the prerequisites.
-
-This script will:
-
-- Create a kind cluster
-- Apply the Kubernetes manifests we need for our demo
-- Use port-forwarding to help us access our service in the browser so we can take photos and describe them with LLaVa (Large Language and Vision Assistant)
-
-```sh
-./startup.sh
-```
-
-To access the service, open your browser and navigate to [http://localhost:8501](http://localhost:8501)
-
-## Shutdown
-
-To shut down the demo, run the following command, which will:
-
-- Remove the Kubernetes manifests
-- Remove the port-forwarding
-- Delete the kind cluster
-
-```sh
-./shutdown.sh
-```
-
-## Operating System Information
-
-This demo has been tested on the following operating systems and will work if you have the prerequisites installed.
-
-- macOS
-- Linux
-- Windows
+# Chat front end 
+https://github.com/arthur-r-oliveira/chat_application_k8s
